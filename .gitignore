@@ -1,0 +1,5 @@
+/target
+Cargo.lock
+
+# For copyright reason, I won't include the PDFs
+ref/*.pdf
