@@ -41,6 +41,9 @@ fn main() -> std::result::Result<(), Box<dyn std::error::Error>> {
                     KeyCode::Right => {
                         cpu.step_control_pulse();
                     }
+                    KeyCode::Down => {
+                        cpu.step_subinstruction();
+                    }
                     KeyCode::Esc => {
                         break;
                     }

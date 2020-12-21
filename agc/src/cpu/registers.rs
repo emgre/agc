@@ -28,6 +28,14 @@ impl SequenceRegister {
     pub fn extended_code(&self) -> W3 {
         self.inner.into()
     }
+
+    pub fn set_extended(&mut self) {
+        self.inner.set(6, true);
+    }
+
+    pub fn inner(self) -> W7 {
+        self.inner
+    }
 }
 
 impl fmt::Display for SequenceRegister {
@@ -75,7 +83,7 @@ impl AddressRegister {
                         }
                     }
                 }
-                0b11 => {
+                0b01 => {
                     // Switched fixed memory
                     let address = W10::from(self.inner);
                     MemoryAddress::SwitchedFixedMemory(address)
@@ -89,15 +97,14 @@ impl AddressRegister {
             }
         }
     }
+
+    pub fn inner(self) -> W12 {
+        self.inner
+    }
 }
 
 impl fmt::Display for AddressRegister {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "{}", self.inner)
     }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
 }

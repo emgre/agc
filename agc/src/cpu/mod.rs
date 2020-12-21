@@ -83,8 +83,6 @@ pub struct Cpu {
     pub s: AddressRegister,
     /// Sequence register
     pub sq: SequenceRegister,
-    /// Extend flip-flop
-    pub ext: bool,
     /// Stage counter
     pub st: W3,
 
@@ -104,7 +102,7 @@ pub struct Cpu {
     // Emulation parameters
     pub current_timepulse: TimePulse,
 
-    /// Value of S at T1
+    /// Value of S after T1
     ///
     /// This is necessary because even if another address is written
     /// to the S register, the original address is used when writing
@@ -137,7 +135,6 @@ impl Cpu {
             g: W16::zero(),
             s: AddressRegister::new(),
             sq: SequenceRegister::new(W6::zero(), false),
-            ext: false,
             st: W3::from(0o1),
             x: W16::zero(),
             y: W16::zero(),
@@ -163,16 +160,28 @@ impl Cpu {
         if !self.sq.is_extended() {
             // Non-extended subinstructions
             match self.sq.order_code().as_u16() {
-                0b000 => match self.st.as_u16() {
+                0o0 => match self.st.as_u16() {
                     0b000 => &TC0,
                     0b001 => &GOJ1,
                     _ => panic!("opcode {} with st {} does not exist", self.sq, self.st),
                 },
-                0b011 => match self.st.as_u16() {
+                0o1 => match self.sq.extended_code().as_u16() {
+                    0o0|0o1 => unimplemented!("opcode {}", self.sq),
+                    0o2|0o3|0o4|0o5|0o6 => &TCF0,
+                    _ => panic!("opcode {} with st {} does not exist", self.sq, self.st),
+                }
+                0o2 => match self.sq.extended_code().as_u16() {
+                    0b000|0b001 => unimplemented!("opcode {}", self.sq),
+                    0b010|0b011 => unimplemented!("opcode {}", self.sq),
+                    //0b100|0b101 => &INCR0,
+                    0b110|0b111 => unimplemented!("opcode {}", self.sq),
+                    _ => panic!("opcode {} with st {} does not exist", self.sq, self.st),
+                }
+                0o3 => match self.st.as_u16() {
                     0b000 => &CA0,
                     _ => panic!("opcode {} with st {} does not exist", self.sq, self.st),
                 }
-                0b101 => match self.sq.extended_code().as_u16() {
+                0o5 => match self.sq.extended_code().as_u16() {
                     0b110|0b111 => match self.st.as_u16() {
                         0b000 => &XCH0,
                         _ => panic!("opcode {} with st {} does not exist", self.sq, self.st),
@@ -206,6 +215,10 @@ impl Cpu {
 
         // Execute additional task
         match self.current_timepulse {
+            TimePulse::T2 => {
+                // Save S value
+                self.current_s = self.s;
+            }
             TimePulse::T4 => {
                 // Perform erasable memory read
                 match self.current_s.address() {
@@ -237,7 +250,7 @@ impl Cpu {
                         // TODO: take into account super-bit
                         self.g = self
                             .fixed_storage
-                            .read(self.ebank.into(), address)
+                            .read(self.fbank.into(), address)
                             .as_register_value();
                     }
                     _ => (),
@@ -268,12 +281,9 @@ impl Cpu {
                 // TODO: perhaps use the actual control pulses RB and WSQ?
                 // TODO: should also re-enable some interrupts
                 if self.nisq {
-                    self.sq = SequenceRegister::new(W6::from(self.b >> 9), self.ext);
+                    self.sq = SequenceRegister::new(W6::from(self.b >> 9), self.sq.is_extended());
                     self.nisq = false;
                 }
-
-                // Update current S value
-                self.current_s = self.s;
 
                 // Set stage counter
                 self.st = self.next_st;

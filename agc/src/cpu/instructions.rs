@@ -69,6 +69,22 @@ pub static GOJ1: Subinstruction = Subinstruction {
     t12: &[],
 };
 
+/*pub static INCR0: Subinstruction = Subinstruction {
+    name: "INCR0",
+    t1: &[&RL10BB, &WS],
+    t2: &[&RSC, &WG],
+    t3: &[],
+    t4: &[],
+    t5: &[&RG, &WY, &TSGN, &TMZ, &TPZG],
+    t6: &[&PONEX],
+    t7: &[&RU, &WSC, &WG, &WOVR],
+    t8: &[&RZ, &WS, &ST2],
+    t9: &[],
+    t10: &[],
+    t11: &[],
+    t12: &[],
+};*/
+
 pub static STD2: Subinstruction = Subinstruction {
     name: "STD2",
     t1: &[&RZ, &WY12, &CI],
@@ -90,6 +106,22 @@ pub static TC0: Subinstruction = Subinstruction {
     t1: &[&RB, &WY12, &CI],
     t2: &[&RSC, &WG, &NISQ],
     t3: &[&RZ, &WQ],
+    t4: &[],
+    t5: &[],
+    t6: &[&RU, &WZ],
+    t7: &[],
+    t8: &[&RAD, &WB, &WS],
+    t9: &[],
+    t10: &[],
+    t11: &[],
+    t12: &[],
+};
+
+pub static TCF0: Subinstruction = Subinstruction {
+    name: "TCF0",
+    t1: &[&RB, &WY12, &CI],
+    t2: &[&RSC, &WG, &NISQ],
+    t3: &[],
     t4: &[],
     t5: &[],
     t6: &[&RU, &WZ],

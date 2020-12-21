@@ -44,6 +44,15 @@ pub static NISQ: ControlPulse = ControlPulse {
     exec_read_wl: exec_read_wl_null,
 };
 
+/// Clear register X, then enter a logic ONE into bit position 1.
+pub static PONEX: ControlPulse = ControlPulse {
+    name: "PONEX",
+    exec_write_wl: exec_write_wl_null,
+    exec_read_wl: |cpu, _wl| {
+        cpu.x = W16::from(1);
+    },
+};
+
 /// Read address of next cycle.
 ///
 /// RAD appears at the end of an instruction and is normally interpreted
@@ -63,7 +72,7 @@ pub static RAD: ControlPulse = ControlPulse {
                 true
             }
             0o00006 => { // EXTEND
-                cpu.ext = true;
+                cpu.sq.set_extended();
                 true
             }
             _ => false
@@ -118,11 +127,11 @@ pub static RSC: ControlPulse = ControlPulse {
             0o0 => cpu.a,
             0o1 => cpu.l,
             0o2 => cpu.q,
-            0o3 => todo!(),
-            0o4 => todo!(),
-            0o5 => todo!(),
-            0o6 => todo!(),
-            0o7 => todo!(),
+            0o3 => W16::from(cpu.ebank) << 8,
+            0o4 => W16::from(cpu.fbank) << 10,
+            0o5 => cpu.z,
+            0o6 => W16::from(cpu.ebank) | (W16::from(cpu.fbank) << 10),
+            0o7 => W16::zero(),
             _ => panic!("Unexpected 3-bit value"),
         },
         _ => W16::zero(),
@@ -166,6 +175,16 @@ pub static ST2: ControlPulse = ControlPulse {
     exec_write_wl: exec_write_wl_null,
     exec_read_wl: |cpu, _wl| {
         cpu.next_st |= 0b010u16;
+    },
+};
+
+/// Test sign (bit 16): if a logic ZERO, set flip-flop BR1 to logic ZERO; if a logic ONE, set
+/// flip-flop BR1 to logic ONE.
+pub static TSGN: ControlPulse = ControlPulse {
+    name: "TSGN",
+    exec_write_wl: exec_write_wl_null,
+    exec_read_wl: |cpu, _wl| {
+        todo!()
     },
 };
 
@@ -218,10 +237,13 @@ pub static WSC: ControlPulse = ControlPulse {
                 0o0 => cpu.a = wl,
                 0o1 => cpu.l = wl,
                 0o2 => cpu.q = wl,
-                0o3 => todo!(),
-                0o4 => todo!(),
+                0o3 => cpu.ebank = W3::from(wl >> 8),
+                0o4 => cpu.fbank = W5::from(wl >> 10),
                 0o5 => cpu.z = wl,
-                0o6 => todo!(),
+                0o6 => {
+                    cpu.ebank = W3::from(wl);
+                    cpu.fbank = W5::from(wl >> 10);
+                },
                 0o7 => (), // Do nothing
                 _ => panic!("Unexpected 3-bit value"),
             }
@@ -236,6 +258,17 @@ pub static WQ: ControlPulse = ControlPulse {
     exec_write_wl: exec_write_wl_null,
     exec_read_wl: |cpu, wl| {
         cpu.q = wl;
+    },
+};
+
+/// Clear registers X and Y and write the contents of WL's 16 through 1 into bit positions 16 through 1
+/// of register Y.
+pub static WY: ControlPulse = ControlPulse {
+    name: "WY",
+    exec_write_wl: exec_write_wl_null,
+    exec_read_wl: |cpu, wl| {
+        cpu.x = W16::zero();
+        cpu.y = wl;
     },
 };
 

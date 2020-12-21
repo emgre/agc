@@ -485,9 +485,8 @@ mod tests {
 
     #[test]
     fn load_yayul_aurora12() {
-        let mut filepath = PathBuf::from(file!());
-        filepath.pop();
-        filepath.pop();
+        let mut filepath = PathBuf::from("");
+        filepath.push("..");
         filepath.push("listings");
         filepath.push("Aurora12.bin");
 
