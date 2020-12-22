@@ -170,32 +170,32 @@ impl Cpu {
                     _ => panic!("opcode {} with st {} does not exist", self.sq, self.st),
                 },
                 0o1 => match self.sq.extended_code().as_u16() {
-                    0o0|0o1 => unimplemented!("opcode {}", self.sq),
-                    0o2|0o3|0o4|0o5|0o6 => &TCF0,
+                    0o0 | 0o1 => unimplemented!("opcode {}", self.sq),
+                    0o2 | 0o3 | 0o4 | 0o5 | 0o6 => &TCF0,
                     _ => panic!("opcode {} with st {} does not exist", self.sq, self.st),
-                }
+                },
                 0o2 => match self.sq.extended_code().as_u16() {
-                    0b000|0b001 => unimplemented!("opcode {}", self.sq),
-                    0b010|0b011 => unimplemented!("opcode {}", self.sq),
-                    0b100|0b101 => &INCR0,
-                    0b110|0b111 => unimplemented!("opcode {}", self.sq),
+                    0b000 | 0b001 => unimplemented!("opcode {}", self.sq),
+                    0b010 | 0b011 => unimplemented!("opcode {}", self.sq),
+                    0b100 | 0b101 => &INCR0,
+                    0b110 | 0b111 => unimplemented!("opcode {}", self.sq),
                     _ => panic!("opcode {} with st {} does not exist", self.sq, self.st),
-                }
+                },
                 0o3 => match self.st.as_u16() {
                     0b000 => &CA0,
                     _ => panic!("opcode {} with st {} does not exist", self.sq, self.st),
-                }
+                },
                 0o5 => match self.sq.extended_code().as_u16() {
-                    0b100|0b101 => match self.st.as_u16() {
+                    0b100 | 0b101 => match self.st.as_u16() {
                         0b000 => &TS0,
                         _ => panic!("opcode {} with st {} does not exist", self.sq, self.st),
-                    }
-                    0b110|0b111 => match self.st.as_u16() {
+                    },
+                    0b110 | 0b111 => match self.st.as_u16() {
                         0b000 => &XCH0,
                         _ => panic!("opcode {} with st {} does not exist", self.sq, self.st),
-                    }
+                    },
                     _ => unimplemented!("opcode {}", self.sq),
-                }
+                },
                 _ => unimplemented!("opcode {}", self.sq),
             }
         } else {
@@ -304,7 +304,7 @@ impl Cpu {
                 // Reset the carry flip-flop
                 self.ci = false;
             }
-            _ => ()
+            _ => (),
         }
 
         // Increment timepulse counter

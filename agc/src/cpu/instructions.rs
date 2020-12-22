@@ -1,5 +1,5 @@
-use crate::cpu::TimePulse;
 use crate::cpu::control_pulses::*;
+use crate::cpu::TimePulse;
 use crate::word::W2;
 
 use super::registers::BranchRegister;
@@ -120,9 +120,20 @@ pub static INCR0: Subinstruction = Subinstruction {
     t2: &[Action::BrXX(&RSC), Action::BrXX(&WG)],
     t3: &[],
     t4: &[],
-    t5: &[Action::BrXX(&RG), Action::BrXX(&WY), Action::BrXX(&TSGN), Action::BrXX(&TMZ), Action::BrXX(&TPZG)],
+    t5: &[
+        Action::BrXX(&RG),
+        Action::BrXX(&WY),
+        Action::BrXX(&TSGN),
+        Action::BrXX(&TMZ),
+        Action::BrXX(&TPZG),
+    ],
     t6: &[Action::BrXX(&PONEX)],
-    t7: &[Action::BrXX(&RU), Action::BrXX(&WSC), Action::BrXX(&WG), Action::BrXX(&WOVR)],
+    t7: &[
+        Action::BrXX(&RU),
+        Action::BrXX(&WSC),
+        Action::BrXX(&WG),
+        Action::BrXX(&WOVR),
+    ],
     t8: &[Action::BrXX(&RZ), Action::BrXX(&WS), Action::BrXX(&ST2)],
     t9: &[],
     t10: &[],
@@ -183,8 +194,18 @@ pub static TS0: Subinstruction = Subinstruction {
     t1: &[Action::BrXX(&RL10BB), Action::BrXX(&WS)],
     t2: &[Action::BrXX(&RSC), Action::BrXX(&WG)],
     t3: &[Action::BrXX(&RA), Action::BrXX(&WB), Action::BrXX(&TOV)],
-    t4: &[Action::BrXX(&RZ), Action::BrXX(&WY12), Action::Br01(&CI), Action::Br10(&CI)],
-    t5: &[Action::Br01(&RB1), Action::Br01(&WA), Action::Br10(&R1C), Action::Br10(&WA)],
+    t4: &[
+        Action::BrXX(&RZ),
+        Action::BrXX(&WY12),
+        Action::Br01(&CI),
+        Action::Br10(&CI),
+    ],
+    t5: &[
+        Action::Br01(&RB1),
+        Action::Br01(&WA),
+        Action::Br10(&R1C),
+        Action::Br10(&WA),
+    ],
     t6: &[Action::BrXX(&RU), Action::BrXX(&WZ)],
     t7: &[Action::BrXX(&RB), Action::BrXX(&WSC), Action::BrXX(&WG)],
     t8: &[Action::BrXX(&RZ), Action::BrXX(&WS), Action::BrXX(&ST2)],

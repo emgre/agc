@@ -121,7 +121,7 @@ impl BranchRegister {
 
     pub fn from(value: W2) -> Self {
         Self {
-            inner: W2::from(value)
+            inner: W2::from(value),
         }
     }
 

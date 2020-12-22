@@ -63,19 +63,22 @@ pub static RAD: ControlPulse = ControlPulse {
     name: "RAD",
     exec_write_wl: |cpu| {
         let is_special = match cpu.g.as_u16() {
-            0o00003 => { // RELINT
+            0o00003 => {
+                // RELINT
                 cpu.inhibit_interrupts = false;
                 true
             }
-            0o00004 => { // INHINT
+            0o00004 => {
+                // INHINT
                 cpu.inhibit_interrupts = true;
                 true
             }
-            0o00006 => { // EXTEND
-                cpu.sq.set_extended(); 
+            0o00006 => {
+                // EXTEND
+                cpu.sq.set_extended();
                 true
             }
-            _ => false
+            _ => false,
         };
 
         if is_special {
@@ -91,7 +94,7 @@ pub static RAD: ControlPulse = ControlPulse {
 /// Place octal 177776 (minus one) on WL's.
 pub static R1C: ControlPulse = ControlPulse {
     name: "R1C",
-    exec_write_wl: |cpu| W16::from(0o177776),
+    exec_write_wl: |_cpu| W16::from(0o177776),
     exec_read_wl: exec_read_wl_null,
 };
 
@@ -112,7 +115,7 @@ pub static RB: ControlPulse = ControlPulse {
 /// Place octal 1 on WL's.
 pub static RB1: ControlPulse = ControlPulse {
     name: "RB1",
-    exec_write_wl: |cpu| W16::from(0o1),
+    exec_write_wl: |_cpu| W16::from(0o1),
     exec_read_wl: exec_read_wl_null,
 };
 
@@ -175,6 +178,7 @@ pub static RZ: ControlPulse = ControlPulse {
 };
 
 /// Set stage 1 flip-flop to logic ONE at next T12.
+#[allow(dead_code)]
 pub static ST1: ControlPulse = ControlPulse {
     name: "ST1",
     exec_write_wl: exec_write_wl_null,
@@ -272,7 +276,11 @@ pub static WOVR: ControlPulse = ControlPulse {
     name: "WOVR",
     exec_write_wl: exec_write_wl_null,
     exec_read_wl: |cpu, wl| {
-        if (wl & 0b1_100_000_000_000_000u16) == W16::from(0b0_100_000_000_000_000) && (cpu.s.inner() == W12::from(0o0026) || cpu.s.inner() == W12::from(0o0027) || cpu.s.inner() == W12::from(0o0030)) {
+        if (wl & 0b1_100_000_000_000_000u16) == W16::from(0b0_100_000_000_000_000)
+            && (cpu.s.inner() == W12::from(0o0026)
+                || cpu.s.inner() == W12::from(0o0027)
+                || cpu.s.inner() == W12::from(0o0030))
+        {
             // TODO: Request RUPT
         }
     },
@@ -304,10 +312,10 @@ pub static WSC: ControlPulse = ControlPulse {
                 0o6 => {
                     cpu.ebank = W3::from(wl);
                     cpu.fbank = W5::from(wl >> 10);
-                },
+                }
                 0o7 => (), // Do nothing
                 _ => panic!("Unexpected 3-bit value"),
-            }
+            },
             _ => (), // Do nothing
         }
     },

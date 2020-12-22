@@ -1,29 +1,24 @@
-use crossterm::*;
+use agc::cpu::Cpu;
+use agc::memory::load_yayul_img_file;
 use crossterm::cursor::*;
 use crossterm::event::*;
 use crossterm::style::*;
 use crossterm::terminal::*;
-use agc::cpu::Cpu;
-use agc::memory::load_yayul_img_file;
+use crossterm::*;
 use std::io::{stdout, Stdout, Write};
 use std::path::PathBuf;
-
-const CONSOLE_WIDTH: u16 = 120;
-const CONSOLE_HEIGTH: u16 = 10;
 
 fn main() -> std::result::Result<(), Box<dyn std::error::Error>> {
     // Initialize terminal
     let mut stdout = stdout();
-    let original_size = size()?;
     enable_raw_mode()?;
     execute!(
         stdout,
         SetTitle("AGC Emulator"),
-        //SetSize(CONSOLE_WIDTH, CONSOLE_HEIGTH), // Change terminal size
-        Clear(ClearType::All),                  // Clear the terminal
-        MoveTo(0, 0),                           // Move to top-left
-        Hide,                                   // Hide the cursor
-        DisableLineWrap,                        // Disable automatic line wrapping
+        Clear(ClearType::All), // Clear the terminal
+        MoveTo(0, 0),          // Move to top-left
+        Hide,                  // Hide the cursor
+        DisableLineWrap,       // Disable automatic line wrapping
     )?;
 
     // Initialize the emulator
@@ -36,20 +31,18 @@ fn main() -> std::result::Result<(), Box<dyn std::error::Error>> {
     redraw(&mut stdout, &cpu, &mut registers)?;
     loop {
         match read()? {
-            Event::Key(event) => {
-                match event.code {
-                    KeyCode::Right => {
-                        cpu.step_control_pulse();
-                    }
-                    KeyCode::Down => {
-                        cpu.step_subinstruction();
-                    }
-                    KeyCode::Esc => {
-                        break;
-                    }
-                    _ => (),
+            Event::Key(event) => match event.code {
+                KeyCode::Right => {
+                    cpu.step_control_pulse();
                 }
-            }
+                KeyCode::Down => {
+                    cpu.step_subinstruction();
+                }
+                KeyCode::Esc => {
+                    break;
+                }
+                _ => (),
+            },
             _ => (),
         }
 
@@ -60,11 +53,11 @@ fn main() -> std::result::Result<(), Box<dyn std::error::Error>> {
     execute!(
         stdout,
         //SetSize(original_size.0, original_size.1), // Restore original size
-        ResetColor,                                // Reset color to default
-        Clear(ClearType::All),                     // Clear the terminal
-        MoveTo(0, 0),                              // Move to top-left
-        Show,                                      // Show cursor
-        EnableLineWrap,                            // Enable automatic line wrapping
+        ResetColor,            // Reset color to default
+        Clear(ClearType::All), // Clear the terminal
+        MoveTo(0, 0),          // Move to top-left
+        Show,                  // Show cursor
+        EnableLineWrap,        // Enable automatic line wrapping
     )?;
     disable_raw_mode()?;
 
@@ -86,7 +79,14 @@ fn redraw(stdout: &mut Stdout, cpu: &Cpu, registers: &mut Registers) -> Result<(
     stdout
         .queue(Clear(ClearType::All))?
         .queue(MoveTo(0, 0))?
-        .queue(PrintStyledContent(format!("T{:02} - {}", usize::from(cpu.current_timepulse), cpu.current_subsintruction_name()).reverse()))?
+        .queue(PrintStyledContent(
+            format!(
+                "T{:02} - {}",
+                usize::from(cpu.current_timepulse),
+                cpu.current_subsintruction_name()
+            )
+            .reverse(),
+        ))?
         .queue(MoveToNextLine(1))?;
 
     registers.print_public_registers(stdout, cpu)?;

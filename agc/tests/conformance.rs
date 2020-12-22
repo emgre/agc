@@ -17,7 +17,7 @@ use agc::cpu::Cpu;
 use agc::memory::load_yayul_img_file;
 use agc::word::*;
 
-const NUM_SUBINSTRUCTIONS: usize = 19;
+const NUM_SUBINSTRUCTIONS: usize = 18;
 
 #[test]
 fn conformance() {
@@ -32,7 +32,12 @@ fn conformance() {
     // Load Verilog simulation data
     let verilog_sim = include_str!("verilog_sim.csv");
 
-    for (line_num, line) in verilog_sim.lines().enumerate().skip(1).take(NUM_SUBINSTRUCTIONS * 12) {
+    for (line_num, line) in verilog_sim
+        .lines()
+        .enumerate()
+        .skip(1)
+        .take(NUM_SUBINSTRUCTIONS * 12)
+    {
         let line_num = line_num + 1;
 
         // Read register status from Verilog file
@@ -40,7 +45,11 @@ fn conformance() {
 
         // Compare the registers
         let actual_registers = RegisterStatus::from_cpu(&cpu);
-        assert_eq!(actual_registers, expected_registers, "different registers at line {}", line_num);
+        assert_eq!(
+            actual_registers, expected_registers,
+            "different registers at line {}",
+            line_num
+        );
 
         // Step the simulation
         cpu.step_control_pulse();
@@ -71,7 +80,10 @@ impl RegisterStatus {
     fn parse(line: &str, line_num: usize) -> Self {
         let parse_octal = |src: Option<&str>, register_name: &str| -> u16 {
             match src {
-                Some(value) => u16::from_str_radix(value, 8).expect(&format!("invalid \"{}\" value at line {}", register_name, line_num)),
+                Some(value) => u16::from_str_radix(value, 8).expect(&format!(
+                    "invalid \"{}\" value at line {}",
+                    register_name, line_num
+                )),
                 None => panic!("missing \"{}\" value", register_name),
             }
         };
@@ -100,8 +112,19 @@ impl RegisterStatus {
         let y = W16::from(parse_octal(it.next(), "Y"));
 
         Self {
-            a, l, q, z, ebank, fbank,
-            b, g, s, sq, st, x, y,
+            a,
+            l,
+            q,
+            z,
+            ebank,
+            fbank,
+            b,
+            g,
+            s,
+            sq,
+            st,
+            x,
+            y,
         }
     }
 
