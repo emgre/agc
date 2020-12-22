@@ -72,7 +72,7 @@ pub static RAD: ControlPulse = ControlPulse {
                 true
             }
             0o00006 => { // EXTEND
-                cpu.sq.set_extended();
+                cpu.sq.set_extended(); 
                 true
             }
             _ => false
@@ -88,6 +88,13 @@ pub static RAD: ControlPulse = ControlPulse {
     exec_read_wl: exec_read_wl_null,
 };
 
+/// Place octal 177776 (minus one) on WL's.
+pub static R1C: ControlPulse = ControlPulse {
+    name: "R1C",
+    exec_write_wl: |cpu| W16::from(0o177776),
+    exec_read_wl: exec_read_wl_null,
+};
+
 /// Read bits 16 through 1 of register A to WL's 16 through 1.
 pub static RA: ControlPulse = ControlPulse {
     name: "RA",
@@ -99,6 +106,13 @@ pub static RA: ControlPulse = ControlPulse {
 pub static RB: ControlPulse = ControlPulse {
     name: "RB",
     exec_write_wl: |cpu| cpu.b,
+    exec_read_wl: exec_read_wl_null,
+};
+
+/// Place octal 1 on WL's.
+pub static RB1: ControlPulse = ControlPulse {
+    name: "RB1",
+    exec_write_wl: |cpu| W16::from(0o1),
     exec_read_wl: exec_read_wl_null,
 };
 
@@ -178,13 +192,48 @@ pub static ST2: ControlPulse = ControlPulse {
     },
 };
 
+/// Test for minus zero: if bits 16 through 1 are all logic ONE’S, set flip-flop BR2 to logic
+/// ONE; otherwise set BR2 to logic ZERO.
+pub static TMZ: ControlPulse = ControlPulse {
+    name: "TMZ",
+    exec_write_wl: exec_write_wl_null,
+    exec_read_wl: |cpu, wl| {
+        cpu.br.set_br2(wl == W16::from(0b1_111_111_111_111_111));
+    },
+};
+
+/// Test for overflow: set flip-flops BR1 and BR2 to 01 if positive overflow, to 10 if
+/// negative overflow.
+pub static TOV: ControlPulse = ControlPulse {
+    name: "TOV",
+    exec_write_wl: exec_write_wl_null,
+    exec_read_wl: |cpu, wl| {
+        let last_bits = W2::from(wl >> 14);
+        if last_bits == W2::from(0b01) || last_bits == W2::from(0b10) {
+            cpu.br.set(last_bits);
+        }
+    },
+};
+
+/// Test content of register G for plus zero: if bits 16 through 1 are all logic ZERO'S, set
+/// flip-flop BR2 to logic ONE: otherwise do not change content of BR2.
+pub static TPZG: ControlPulse = ControlPulse {
+    name: "TPZG",
+    exec_write_wl: exec_write_wl_null,
+    exec_read_wl: |cpu, _wl| {
+        if cpu.g == W16::from(0b0_000_000_000_000_000) {
+            cpu.br.set_br2(true);
+        }
+    },
+};
+
 /// Test sign (bit 16): if a logic ZERO, set flip-flop BR1 to logic ZERO; if a logic ONE, set
 /// flip-flop BR1 to logic ONE.
 pub static TSGN: ControlPulse = ControlPulse {
     name: "TSGN",
     exec_write_wl: exec_write_wl_null,
-    exec_read_wl: |cpu, _wl| {
-        todo!()
+    exec_read_wl: |cpu, wl| {
+        cpu.br.set_br1(wl.get(15));
     },
 };
 
@@ -214,6 +263,18 @@ pub static WG: ControlPulse = ControlPulse {
     exec_read_wl: |cpu, wl| {
         // TODO: Check if S contains octal address 20 through 23
         cpu.g = wl;
+    },
+};
+
+/// Test for positive overflow. If register S contains 0025, counter 0024 is incremented; if
+/// register S contains 0026, 0027, or 0030, instruction RUPT is executed.
+pub static WOVR: ControlPulse = ControlPulse {
+    name: "WOVR",
+    exec_write_wl: exec_write_wl_null,
+    exec_read_wl: |cpu, wl| {
+        if (wl & 0b1_100_000_000_000_000u16) == W16::from(0b0_100_000_000_000_000) && (cpu.s.inner() == W12::from(0o0026) || cpu.s.inner() == W12::from(0o0027) || cpu.s.inner() == W12::from(0o0030)) {
+            // TODO: Request RUPT
+        }
     },
 };
 

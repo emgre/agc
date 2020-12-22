@@ -17,7 +17,7 @@ use agc::cpu::Cpu;
 use agc::memory::load_yayul_img_file;
 use agc::word::*;
 
-const NUM_SUBINSTRUCTIONS: usize = 8;
+const NUM_SUBINSTRUCTIONS: usize = 19;
 
 #[test]
 fn conformance() {
@@ -78,6 +78,11 @@ impl RegisterStatus {
 
         let mut it = line.split_terminator(';');
 
+        // Skip some information data
+        it.next();
+        it.next();
+
+        // Extract the public registers
         let a = W16::from(parse_octal(it.next(), "A"));
         let l = W16::from(parse_octal(it.next(), "L"));
         let q = W16::from(parse_octal(it.next(), "Q"));
@@ -85,6 +90,7 @@ impl RegisterStatus {
         let ebank = W3::from(parse_octal(it.next(), "EBANK"));
         let fbank = W5::from(parse_octal(it.next(), "FBANK"));
 
+        // Extract the private registers
         let b = W16::from(parse_octal(it.next(), "B"));
         let g = W16::from(parse_octal(it.next(), "G"));
         let s = W12::from(parse_octal(it.next(), "S"));

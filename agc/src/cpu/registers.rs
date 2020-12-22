@@ -59,8 +59,8 @@ pub struct AddressRegister {
 }
 
 impl AddressRegister {
-    pub fn new() -> Self {
-        Self { inner: W12::zero() }
+    pub fn zero() -> Self {
+        Self::from(W12::zero())
     }
 
     pub fn from(value: W12) -> Self {
@@ -104,6 +104,57 @@ impl AddressRegister {
 }
 
 impl fmt::Display for AddressRegister {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{}", self.inner)
+    }
+}
+
+#[derive(Copy, Clone)]
+pub struct BranchRegister {
+    inner: W2,
+}
+
+impl BranchRegister {
+    pub fn zero() -> Self {
+        Self::from(W2::zero())
+    }
+
+    pub fn from(value: W2) -> Self {
+        Self {
+            inner: W2::from(value)
+        }
+    }
+
+    pub fn br1(&self) -> bool {
+        self.inner.get(0)
+    }
+
+    pub fn set_br1(&mut self, value: bool) {
+        self.inner.set(0, value);
+    }
+
+    pub fn br2(&self) -> bool {
+        self.inner.get(1)
+    }
+
+    pub fn set_br2(&mut self, value: bool) {
+        self.inner.set(1, value);
+    }
+
+    pub fn set(&mut self, value: W2) {
+        self.inner = value;
+    }
+
+    pub fn reset(&mut self) {
+        self.inner = W2::zero();
+    }
+
+    pub fn inner(self) -> W2 {
+        self.inner
+    }
+}
+
+impl fmt::Display for BranchRegister {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "{}", self.inner)
     }

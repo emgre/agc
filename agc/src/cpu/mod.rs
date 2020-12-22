@@ -1,3 +1,5 @@
+use registers::BranchRegister;
+
 use crate::cpu::instructions::*;
 use crate::cpu::registers::{AddressRegister, MemoryAddress, SequenceRegister};
 use crate::memory::{ErasableStorage, FixedStorage, MemoryWord};
@@ -85,13 +87,14 @@ pub struct Cpu {
     pub sq: SequenceRegister,
     /// Stage counter
     pub st: W3,
-
     /// Arithmetic X
     pub x: W16,
     /// Arithmetic Y
     pub y: W16,
     /// Carry flip-flop
     pub ci: bool,
+    /// Branch register (used to make decision)
+    pub br: BranchRegister,
 
     // Storage of the computer
     /// Erasable (read-write) memory storage
@@ -133,18 +136,19 @@ impl Cpu {
 
             b: W16::zero(),
             g: W16::zero(),
-            s: AddressRegister::new(),
+            s: AddressRegister::zero(),
             sq: SequenceRegister::new(W6::zero(), false),
             st: W3::from(0o1),
             x: W16::zero(),
             y: W16::zero(),
-            ci: true,
+            ci: false,
+            br: BranchRegister::zero(),
 
             erasable_storage: ErasableStorage::new(),
             fixed_storage,
 
             current_timepulse: TimePulse::T1,
-            current_s: AddressRegister::new(),
+            current_s: AddressRegister::zero(),
             nisq: false,
             next_st: W3::zero(),
             inhibit_interrupts: false,
@@ -173,7 +177,7 @@ impl Cpu {
                 0o2 => match self.sq.extended_code().as_u16() {
                     0b000|0b001 => unimplemented!("opcode {}", self.sq),
                     0b010|0b011 => unimplemented!("opcode {}", self.sq),
-                    //0b100|0b101 => &INCR0,
+                    0b100|0b101 => &INCR0,
                     0b110|0b111 => unimplemented!("opcode {}", self.sq),
                     _ => panic!("opcode {} with st {} does not exist", self.sq, self.st),
                 }
@@ -182,6 +186,10 @@ impl Cpu {
                     _ => panic!("opcode {} with st {} does not exist", self.sq, self.st),
                 }
                 0o5 => match self.sq.extended_code().as_u16() {
+                    0b100|0b101 => match self.st.as_u16() {
+                        0b000 => &TS0,
+                        _ => panic!("opcode {} with st {} does not exist", self.sq, self.st),
+                    }
                     0b110|0b111 => match self.st.as_u16() {
                         0b000 => &XCH0,
                         _ => panic!("opcode {} with st {} does not exist", self.sq, self.st),
@@ -197,14 +205,15 @@ impl Cpu {
     }
 
     fn execute_control_pulses(&mut self, t: TimePulse) {
-        let control_pulses = self.current_subinstruction().control_pulses(t);
+        let actions = self.current_subinstruction().actions(t);
 
+        let br = self.br;
         let mut wl = W16::zero();
-        for control_pulse in control_pulses {
-            wl |= (control_pulse.exec_write_wl)(self);
+        for action in actions.iter().filter(|action| action.execute(br)) {
+            wl |= (action.control_pulse().exec_write_wl)(self);
         }
-        for control_pulse in control_pulses {
-            (control_pulse.exec_read_wl)(self, wl);
+        for action in actions.iter().filter(|action| action.execute(br)) {
+            (action.control_pulse().exec_read_wl)(self, wl);
         }
     }
 
@@ -215,7 +224,7 @@ impl Cpu {
 
         // Execute additional task
         match self.current_timepulse {
-            TimePulse::T2 => {
+            TimePulse::T1 => {
                 // Save S value
                 self.current_s = self.s;
             }
@@ -288,6 +297,12 @@ impl Cpu {
                 // Set stage counter
                 self.st = self.next_st;
                 self.next_st = W3::zero();
+
+                // Reset the branch register
+                self.br.reset();
+
+                // Reset the carry flip-flop
+                self.ci = false;
             }
             _ => ()
         }

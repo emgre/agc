@@ -15,8 +15,8 @@ Simply run `cargo build` to build the project.
 Unit tests can be executed with `cargo test`.
 
 A TUI application is available to interactively run the emulator. To run it,
-use `cargo run --bin agc-tui`. The right arrow key steps one clock cycle and
-the escape key exits the application.
+use `cargo run agc-tui`. The right arrow key steps one clock cycle and the
+escape key exits the application.
 
 ## Comparison with Virtual AGC
 

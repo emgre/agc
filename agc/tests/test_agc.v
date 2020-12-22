@@ -276,6 +276,7 @@ module main;
 
     // Outputing registers
     integer f;
+    integer subinstruction_count;
     wire [15:0] A;
     wire [15:0] L;
     wire [15:0] Q;
@@ -525,43 +526,45 @@ module main;
         f = $fopen("verilog_sim.csv", "w");
 
         // CSV header
-        $fwrite(f, "A;L;Q;Z;EBANK;FBANK;B;G;S;SQ;ST;X;Y;\n");
+        $fwrite(f, "Subinstruction Count;Time Pulse;A;L;Q;Z;EBANK;FBANK;B;G;S;SQ;ST;X;Y;\n");
 
         #5000 SIM_RST = 0;
+        subinstruction_count = 0;
         repeat(100) begin
             @(posedge AGC.T01);
-            print_regs();
+            print_regs(subinstruction_count, "T01");
             @(posedge AGC.T02);
-            print_regs();
+            print_regs(subinstruction_count, "T02");
             @(posedge AGC.T03);
-            print_regs();
+            print_regs(subinstruction_count, "T03");
             @(posedge AGC.T04);
-            print_regs();
+            print_regs(subinstruction_count, "T04");
             @(posedge AGC.T05);
-            print_regs();
+            print_regs(subinstruction_count, "T05");
             @(posedge AGC.T06);
-            print_regs();
+            print_regs(subinstruction_count, "T06");
             @(posedge AGC.T07);
-            print_regs();
+            print_regs(subinstruction_count, "T07");
             @(posedge AGC.T08);
-            print_regs();
+            print_regs(subinstruction_count, "T08");
             @(posedge AGC.T09);
-            print_regs();
+            print_regs(subinstruction_count, "T09");
             @(posedge AGC.T10);
-            print_regs();
+            print_regs(subinstruction_count, "T10");
             @(posedge AGC.T11);
-            print_regs();
+            print_regs(subinstruction_count, "T11");
             @(posedge AGC.T12);
-            print_regs();
+            print_regs(subinstruction_count, "T12");
+            subinstruction_count = subinstruction_count + 1;
         end
 
         $fclose(f);
         $finish();
     end
 
-    task print_regs();
+    task print_regs(input integer subinstruction_count, input reg [3*8] time_pulse);
         begin
-            $fwrite(f, "%O;%O;%O;%O;%O;%O;%O;%O;%O;%O;%O;%O;%O;\n", A, L, Q, Z, EBANK, FBANK, B, G, S, SQ, ST, X, Y);
+            $fwrite(f, "%0d;%s;%O;%O;%O;%O;%O;%O;%O;%O;%O;%O;%O;%O;%O;\n", subinstruction_count, time_pulse, A, L, Q, Z, EBANK, FBANK, B, G, S, SQ, ST, X, Y);
         end
     endtask
 
