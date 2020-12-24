@@ -290,6 +290,7 @@ module main;
     wire [2:0] ST;
     wire [15:0] X;
     wire [15:0] Y;
+    wire [1:0] BR;
 
     assign A[0] = ~AGC.A08.__A08_1___A1_n;
     assign A[1] = ~AGC.A08.__A08_1___A2_n;
@@ -461,6 +462,9 @@ module main;
     assign Y[14] = AGC.A11.__A11_2__Y1;
     assign Y[15] = AGC.A11.__A11_2__Y2;
 
+    assign BR[0] = AGC.BR1;
+    assign BR[1] = AGC.BR2;
+
     assign p4VSW = p4VDC && SBYREL_n;
 
     // PIPA spoofing -- simulate 3-3 moding on PIPA inputs, synced with PIPDAT
@@ -526,7 +530,7 @@ module main;
         f = $fopen("verilog_sim.csv", "w");
 
         // CSV header
-        $fwrite(f, "Subinstruction Count;Time Pulse;A;L;Q;Z;EBANK;FBANK;B;G;S;SQ;ST;X;Y;\n");
+        $fwrite(f, "Subinstruction Count;Time Pulse;A;L;Q;Z;EBANK;FBANK;B;G;S;SQ;ST;X;Y;BR;\n");
 
         #5000 SIM_RST = 0;
         subinstruction_count = 0;
@@ -564,7 +568,7 @@ module main;
 
     task print_regs(input integer subinstruction_count, input reg [3*8] time_pulse);
         begin
-            $fwrite(f, "%0d;%s;%O;%O;%O;%O;%O;%O;%O;%O;%O;%O;%O;%O;%O;\n", subinstruction_count, time_pulse, A, L, Q, Z, EBANK, FBANK, B, G, S, SQ, ST, X, Y);
+            $fwrite(f, "%0d;%s;%O;%O;%O;%O;%O;%O;%O;%O;%O;%O;%O;%O;%O;%O;\n", subinstruction_count, time_pulse, A, L, Q, Z, EBANK, FBANK, B, G, S, SQ, ST, X, Y, BR);
         end
     endtask
 

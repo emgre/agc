@@ -74,6 +74,7 @@ struct RegisterStatus {
     st: W3,
     x: W16,
     y: W16,
+    br: W2,
 }
 
 impl RegisterStatus {
@@ -110,6 +111,7 @@ impl RegisterStatus {
         let st = W3::from(parse_octal(it.next(), "ST"));
         let x = W16::from(parse_octal(it.next(), "X"));
         let y = W16::from(parse_octal(it.next(), "Y"));
+        let br = W2::from(parse_octal(it.next(), "BR"));
 
         Self {
             a,
@@ -125,6 +127,7 @@ impl RegisterStatus {
             st,
             x,
             y,
+            br,
         }
     }
 
@@ -144,6 +147,7 @@ impl RegisterStatus {
             st: cpu.st,
             x: cpu.x,
             y: cpu.y,
+            br: cpu.br.inner(),
         }
     }
 }

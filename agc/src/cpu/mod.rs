@@ -142,7 +142,7 @@ impl Cpu {
             x: W16::zero(),
             y: W16::zero(),
             ci: false,
-            br: BranchRegister::zero(),
+            br: BranchRegister::new(),
 
             erasable_storage: ErasableStorage::new(),
             fixed_storage,
@@ -297,9 +297,6 @@ impl Cpu {
                 // Set stage counter
                 self.st = self.next_st;
                 self.next_st = W3::zero();
-
-                // Reset the branch register
-                self.br.reset();
 
                 // Reset the carry flip-flop
                 self.ci = false;

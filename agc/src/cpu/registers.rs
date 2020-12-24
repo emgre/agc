@@ -115,8 +115,8 @@ pub struct BranchRegister {
 }
 
 impl BranchRegister {
-    pub fn zero() -> Self {
-        Self::from(W2::zero())
+    pub fn new() -> Self {
+        Self::from(W2::full())
     }
 
     pub fn from(value: W2) -> Self {

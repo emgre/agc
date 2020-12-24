@@ -208,6 +208,8 @@ pub static TMZ: ControlPulse = ControlPulse {
 
 /// Test for overflow: set flip-flops BR1 and BR2 to 01 if positive overflow, to 10 if
 /// negative overflow.
+///
+/// Otherwise, it resets both flip-flop.
 pub static TOV: ControlPulse = ControlPulse {
     name: "TOV",
     exec_write_wl: exec_write_wl_null,
@@ -215,6 +217,8 @@ pub static TOV: ControlPulse = ControlPulse {
         let last_bits = W2::from(wl >> 14);
         if last_bits == W2::from(0b01) || last_bits == W2::from(0b10) {
             cpu.br.set(last_bits);
+        } else {
+            cpu.br.set(W2::from(0b00));
         }
     },
 };

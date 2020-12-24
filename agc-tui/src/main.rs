@@ -129,6 +129,7 @@ struct Registers {
     x: PrintedRegister,
     y: PrintedRegister,
     ci: PrintedRegister,
+    br: PrintedRegister,
 }
 
 impl Registers {
@@ -149,6 +150,7 @@ impl Registers {
             x: PrintedRegister::new("X", |cpu| cpu.x.to_string()),
             y: PrintedRegister::new("Y", |cpu| cpu.y.to_string()),
             ci: PrintedRegister::new("CI", |cpu| cpu.ci.to_string()),
+            br: PrintedRegister::new("BR", |cpu| cpu.br.to_string()),
         }
     }
 
@@ -183,6 +185,8 @@ impl Registers {
         self.y.print(stdout, cpu)?;
         stdout.queue(Print(" "))?;
         self.ci.print(stdout, cpu)?;
+        stdout.queue(Print(" "))?;
+        self.br.print(stdout, cpu)?;
         Ok(())
     }
 }
