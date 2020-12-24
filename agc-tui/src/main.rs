@@ -89,6 +89,18 @@ fn redraw(stdout: &mut Stdout, cpu: &Cpu, registers: &mut Registers) -> Result<(
         ))?
         .queue(MoveToNextLine(1))?;
 
+    // Print the next control pulses
+    let control_pulses = cpu
+        .current_subinstruction()
+        .actions(cpu.current_timepulse)
+        .iter()
+        .filter(|action| action.execute(cpu.br))
+        .map(|action| action.control_pulse().name)
+        .collect::<Vec<_>>()
+        .join(" ");
+    stdout.queue(Print(format!("Next pulses: [{}]", control_pulses)))?;
+    stdout.queue(MoveToNextLine(1))?;
+
     registers.print_public_registers(stdout, cpu)?;
     stdout.queue(MoveToNextLine(1))?;
     registers.print_private_registers(stdout, cpu)?;
