@@ -17,7 +17,7 @@ use agc::cpu::Cpu;
 use agc::memory::load_yayul_img_file;
 use agc::word::*;
 
-const NUM_SUBINSTRUCTIONS: usize = 18;
+const NUM_SUBINSTRUCTIONS: usize = 100;
 
 #[test]
 fn conformance() {
@@ -70,7 +70,7 @@ struct RegisterStatus {
     b: W16,
     g: W16,
     s: W12,
-    sq: W6,
+    sq: W7,
     st: W3,
     x: W16,
     y: W16,
@@ -107,7 +107,7 @@ impl RegisterStatus {
         let b = W16::from(parse_octal(it.next(), "B"));
         let g = W16::from(parse_octal(it.next(), "G"));
         let s = W12::from(parse_octal(it.next(), "S"));
-        let sq = W6::from(parse_octal(it.next(), "SQ"));
+        let sq = W7::from(parse_octal(it.next(), "SQ"));
         let st = W3::from(parse_octal(it.next(), "ST"));
         let x = W16::from(parse_octal(it.next(), "X"));
         let y = W16::from(parse_octal(it.next(), "Y"));

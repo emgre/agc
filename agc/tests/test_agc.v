@@ -286,7 +286,7 @@ module main;
     wire [15:0] B;
     wire [15:0] G;
     wire [11:0] S;
-    wire [5:0] SQ;
+    wire [6:0] SQ;
     wire [2:0] ST;
     wire [15:0] X;
     wire [15:0] Y;
@@ -423,6 +423,7 @@ module main;
     assign SQ[3] = AGC.A03.__A03_1__SQR13;
     assign SQ[4] = AGC.A03.__A03_1__SQR14;
     assign SQ[5] = AGC.A03.__A03_1__SQR16;
+    assign SQ[6] = AGC.SQEXT;
 
     assign ST[0] = AGC.A04.__A04_1__STG1;
     assign ST[1] = AGC.A04.__A04_1__STG2;

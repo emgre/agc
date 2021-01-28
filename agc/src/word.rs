@@ -89,7 +89,7 @@ impl<WS: WordSize> Word<WS> {
     pub fn get(&self, index: u8) -> bool {
         debug_assert!(index < Self::num_bits());
 
-        self.inner & (1 << index) != 0
+        self.inner & (1u16 << index) != 0
     }
 
     pub fn set(&mut self, index: u8, value: bool) -> bool {
@@ -171,6 +171,14 @@ impl<WS: WordSize> Shr<usize> for Word<WS> {
 
     fn shr(self, rhs: usize) -> Self::Output {
         Self::from(self.inner >> rhs)
+    }
+}
+
+impl<WS: WordSize> Not for Word<WS> {
+    type Output = Self;
+
+    fn not(self) -> Self::Output {
+        Self::from(!self.inner)
     }
 }
 
@@ -674,6 +682,11 @@ mod tests {
         assert_eq!(w10 >> 3, W10::from(0b00_0000_1100));
         assert_eq!(w10 >> 0, w10);
         assert_eq!(w10 >> 10, W10::zero());
+    }
+
+    #[test]
+    fn bit_not() {
+        assert_eq!(!W10::from(0b00_0110_0110), W10::from(0b11_1001_1001));
     }
 
     #[test]

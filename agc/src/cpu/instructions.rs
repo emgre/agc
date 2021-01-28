@@ -98,6 +98,22 @@ pub static CA0: Subinstruction = Subinstruction {
     t12: &[],
 };
 
+pub static CS0: Subinstruction = Subinstruction {
+    name: "CS0",
+    t1: &[],
+    t2: &[Action::BrXX(&RSC), Action::BrXX(&WG)],
+    t3: &[],
+    t4: &[],
+    t5: &[],
+    t6: &[],
+    t7: &[Action::BrXX(&RG), Action::BrXX(&WB)],
+    t8: &[Action::BrXX(&RZ), Action::BrXX(&WS), Action::BrXX(&ST2)],
+    t9: &[Action::BrXX(&RB), Action::BrXX(&WG)],
+    t10: &[Action::BrXX(&RC), Action::BrXX(&WA)],
+    t11: &[],
+    t12: &[],
+};
+
 pub static GOJ1: Subinstruction = Subinstruction {
     name: "GOJ1",
     t1: &[],
@@ -224,6 +240,22 @@ pub static XCH0: Subinstruction = Subinstruction {
     t5: &[Action::BrXX(&RG), Action::BrXX(&WA)],
     t6: &[],
     t7: &[Action::BrXX(&RB), Action::BrXX(&WSC), Action::BrXX(&WG)],
+    t8: &[Action::BrXX(&RZ), Action::BrXX(&WS), Action::BrXX(&ST2)],
+    t9: &[],
+    t10: &[],
+    t11: &[],
+    t12: &[],
+};
+
+pub static WRITE0: Subinstruction = Subinstruction {
+    name: "WRITE0",
+    t1: &[Action::BrXX(&RL10BB), Action::BrXX(&WS)],
+    t2: &[Action::BrXX(&RA), Action::BrXX(&WB), Action::BrXX(&WG)],
+    t3: &[Action::BrXX(&WY)],
+    t4: &[Action::BrXX(&RCH), Action::BrXX(&WB)],
+    t5: &[Action::BrXX(&RA), Action::BrXX(&WCH)],
+    t6: &[Action::BrXX(&RA), Action::BrXX(&WB)],
+    t7: &[],
     t8: &[Action::BrXX(&RZ), Action::BrXX(&WS), Action::BrXX(&ST2)],
     t9: &[],
     t10: &[],

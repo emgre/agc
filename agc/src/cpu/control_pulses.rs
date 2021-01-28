@@ -75,7 +75,7 @@ pub static RAD: ControlPulse = ControlPulse {
             }
             0o00006 => {
                 // EXTEND
-                cpu.sq.set_extended();
+                cpu.ext = true;
                 true
             }
             _ => false,
@@ -112,10 +112,28 @@ pub static RB: ControlPulse = ControlPulse {
     exec_read_wl: exec_read_wl_null,
 };
 
+/// Read the complemented contents of register B (bits 16 through 1 of C) to WL's 16 through 1.
+pub static RC: ControlPulse = ControlPulse {
+    name: "RC",
+    exec_write_wl: |cpu| !cpu.b,
+    exec_read_wl: exec_read_wl_null,
+};
+
 /// Place octal 1 on WL's.
 pub static RB1: ControlPulse = ControlPulse {
     name: "RB1",
     exec_write_wl: |_cpu| W16::from(0o1),
+    exec_read_wl: exec_read_wl_null,
+};
+
+/// Read the contents of the input or output channel specified by the contents of register S; bit
+/// 16 is read to WL's 16 and 15 and bits 14 through 1 are read to WL's 14 through 1.
+pub static RCH: ControlPulse = ControlPulse {
+    name: "RCH",
+    exec_write_wl: |_cpu| {
+        // TODO
+        W16::zero()
+    },
     exec_read_wl: exec_read_wl_null,
 };
 
@@ -260,6 +278,16 @@ pub static WB: ControlPulse = ControlPulse {
     exec_write_wl: exec_write_wl_null,
     exec_read_wl: |cpu, wl| {
         cpu.b = wl;
+    },
+};
+
+/// Clear the channel specified by the contents of register S (bits 9 through 1) and write the
+/// contents of WL's 16 through 1 into this channel.
+pub static WCH: ControlPulse = ControlPulse {
+    name: "WCH",
+    exec_write_wl: exec_write_wl_null,
+    exec_read_wl: |_cpu, _wl| {
+        // TODO
     },
 };
 

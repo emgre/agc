@@ -21,16 +21,27 @@ impl SequenceRegister {
         self.inner.get(6)
     }
 
+    /// Returns the first 3 bits 
     pub fn order_code(&self) -> W3 {
         (self.inner >> 3).into()
     }
 
-    pub fn extended_code(&self) -> W3 {
-        self.inner.into()
+    /// Returns the quarter code bits
+    ///
+    /// Non-extended instructions can use the two most significant
+    /// bit of the address if the instruction always refers to
+    /// erasable memory.
+    pub fn quarter_code(&self) -> W2 {
+        (self.inner >> 1).into()
     }
 
-    pub fn set_extended(&mut self) {
-        self.inner.set(6, true);
+    /// Returns the peripheral code
+    ///
+    /// Most of the I/O instructions (to interact with channels) uses
+    /// the three most significant bit of the address, since there are
+    /// only 512 addressable channels.
+    pub fn peripheral_code(&self) -> W3 {
+        self.inner.into()
     }
 
     pub fn inner(self) -> W7 {
